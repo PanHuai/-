@@ -11,10 +11,10 @@
          <error-code>404</error-code>        &lt;!&ndash;HTTP Error code,例如: 404、403&ndash;&gt;  
          <location>error.html</location>         &lt;!&ndash;用来设置发生错误或异常时要显示的页面&ndash;&gt;  
     </error-page>-->
-    <error-page>  
-        <exception-type>java.lang.Exception</exception-type><!--设置可能会发生的java异常类型,例如:java.lang.Exception-->
-         <location>ExceptionError.html</location>            <!--用来设置发生错误或异常时要显示的页面-->  
-    </error-page>
+<!--    <error-page>  
+        <exception-type>java.lang.Exception</exception-type>&lt;!&ndash;设置可能会发生的java异常类型,例如:java.lang.Exception&ndash;&gt;
+         <location>/ExceptionError.html</location>            &lt;!&ndash;用来设置发生错误或异常时要显示的页面&ndash;&gt;  
+    </error-page>-->
      
 
     <!-- 读取spring配置文件- -->
@@ -25,12 +25,6 @@
     <!-- 注册ServletContext监听器，创建容器对象，并且将ApplicationContext对象放到Application域中 -->
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-     <!-- 防止Spring内存溢出监听器  -->  
-        
-    <listener>  
-                <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>  
-            
     </listener>
      
 
