@@ -1,12 +1,21 @@
-<!DOCTYPE web-app PUBLIC
-        "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
-        "http://java.sun.com/dtd/web-app_2_3.dtd" >
-
-<web-app>
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
+         version="3.0">
     <display-name>myProject</display-name>
     <welcome-file-list>
         <welcome-file>index.jsp</welcome-file>
     </welcome-file-list>
+<!--    <error-page>  &lt;!&ndash;将错误代码(Error Code)或异常(Exception)的种类对应到web应用资源路径.&ndash;&gt;  
+         <error-code>404</error-code>        &lt;!&ndash;HTTP Error code,例如: 404、403&ndash;&gt;  
+         <location>error.html</location>         &lt;!&ndash;用来设置发生错误或异常时要显示的页面&ndash;&gt;  
+    </error-page>-->
+    <error-page>  
+        <exception-type>java.lang.Exception</exception-type><!--设置可能会发生的java异常类型,例如:java.lang.Exception-->
+         <location>ExceptionError.html</location>            <!--用来设置发生错误或异常时要显示的页面-->  
+    </error-page>
+     
 
     <!-- 读取spring配置文件- -->
     <context-param>
@@ -17,6 +26,13 @@
     <listener>
         <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
     </listener>
+     <!-- 防止Spring内存溢出监听器  -->  
+        
+    <listener>  
+                <listener-class>org.springframework.web.util.IntrospectorCleanupListener</listener-class>  
+            
+    </listener>
+     
 
     <!-- 针对SpringMVC的配置中央调度器,本质上一个serlvet配置的关于SpringmVC组件 -->
     <servlet>
@@ -55,6 +71,14 @@
         <filter-name>CharacterEncodingFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
+     <!-- 会话超时配置（单位为分钟）-->  
+     <!--如果某个会话在一定时间未被访问，则服务器可以扔掉以节约内存-->
+    <session-config>  
+         <session-timeout>120</session-timeout>  
+    </session-config>
+     
+
 </web-app>
 
 
