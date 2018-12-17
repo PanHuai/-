@@ -17,22 +17,22 @@
             border-radius: 5px;
             background-color: white;
             float: left;
+            margin-bottom: 3.5%;
         }
 
         .div-middle {
             width: 100%;
-            border-bottom: 1px solid lightgray;
             float: left;
         }
 
-        .div-middle div:nth-child(1) {
+        .div-middle div:nth-of-type(1) {
             width: 30%;
             float: left;
             padding-top: 6%;
             padding-left: 6%;
         }
 
-        .div-middle div:nth-child(2) {
+        .div-middle div:nth-of-type(2) {
             width: 50%;
             float: right;
             margin-top: 8%;
@@ -80,8 +80,8 @@
             width: 13%;
             display: inline-block;
             float: right;
-            border: 2px solid gray;
-            color: gray;
+            border: 2px solid #AAAAAA;
+            color: #AAAAAA;
             font-weight: bold;
             border-radius: 50%;
             text-align: center;
@@ -89,11 +89,40 @@
             padding-bottom: 13%;
             overflow: hidden;
         }
+        .hr_style{
+            width: 94%;
+            border: none;
+            text-align: center;
+            background-color: #F5F5F5;
+            height: 1px;
+            float: left;
+            margin: 4% 0 0 3%;
+        }
+        .div-middle-p{
+            float: left;
+            font-size: 0.8rem;
+            width: 93%;
+            margin-bottom: 4%;
+            color: #AAAAAA;
+            padding-left: 7%;
+        }
+        .span-one{
+            display: block;
+            float: left;
+            color: #f9bd06;
+            width: 9%;
+        }
+        .span-two {
+            display: block;
+            float: right;
+            width: 91%;
+        }
+
 
 
     </style>
 </head>
-<body style="background-color: lightgray;margin: 1%">
+<body style="background-color: whitesmoke;margin: 3.5% 3.5% 0">
 <div class="div-top">
     <div class="div-middle">
         <div>
@@ -106,7 +135,27 @@
             <span class="right-span-three">-</span>
         </div>
     </div>
+    <hr class="hr_style">
+    <div class="div-middle">
+        <p class="div-middle-p"><span>注：</span>580/人（含税开票）</p>
+    </div>
 </div>
-
+<div class="div-top">
+    <div class="div-middle">
+        <div>
+            <span class="left-span-one">普通票</span>
+            <span class="left-span-two">￥580</span>
+        </div>
+        <div>
+            <span class="right-span-one">+</span>
+            <span class="right-span-two">0</span>
+            <span class="right-span-three">-</span>
+        </div>
+    </div>
+    <hr class="hr_style">
+    <div class="div-middle">
+        <p class="div-middle-p"><span class="span-one">团：</span><span class="span-two">此门票为团购票，3人（含）以上480/人（含税开票）</span></p>
+    </div>
+</div>
 </body>
 </html>
