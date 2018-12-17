@@ -35,7 +35,7 @@
         .div-middle div:nth-of-type(2) {
             width: 50%;
             float: right;
-            margin-top: 8%;
+            margin-top: 11%;
             margin-right: 5%;
         }
 
@@ -53,41 +53,16 @@
             color: #f9bd06;
         }
         .right-span-one{
-            width: 13%;
+            width: 15%;
             display: inline-block;
-            height: 0;
-            padding-bottom: 13%;
             float: right;
-            border: 2px solid #f9bd06;
-            color: #f9bd06;
-            border-radius: 50%;
-            text-align: center;
-            font-weight: bold;
-            overflow: hidden;
         }
         .right-span-two{
             width: 20%;
             display: inline-block;
             float: right;
             text-align: center;
-            margin-top: 1%;
-            height: 0;
-            padding-bottom: 20%;
-            overflow: hidden;
-            font-size: 1.5rem;
-        }
-        .right-span-three{
-            width: 13%;
-            display: inline-block;
-            float: right;
-            border: 2px solid #AAAAAA;
-            color: #AAAAAA;
-            font-weight: bold;
-            border-radius: 50%;
-            text-align: center;
-            height: 0;
-            padding-bottom: 13%;
-            overflow: hidden;
+            font-size: 1.23rem;
         }
         .hr_style{
             width: 94%;
@@ -117,6 +92,38 @@
             float: right;
             width: 91%;
         }
+        .img-header {
+            width: auto;
+            height: auto;
+            max-height: 100%;
+            max-width: 100%;
+        }
+        .div-buttom{
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 50px;
+        }
+        .div-buttom p:nth-of-type(1){
+            width: 40%;
+            height: 100%;
+            line-height: 50px;
+            float: left;
+            padding-left: 3.5%;
+            margin: 0;
+        }
+        .div-buttom p:nth-of-type(2){
+            width: 40%;
+            margin: 0;
+            float: right;
+            height: 100%;
+            text-align: center;
+            line-height: 50px;
+            background-color: #f9bd06;
+            color: white;
+            border-radius: 6% 0 0;
+        }
 
 
 
@@ -130,32 +137,37 @@
             <span class="left-span-two">￥580</span>
         </div>
         <div>
-            <span class="right-span-one">+</span>
-            <span class="right-span-two">0</span>
-            <span class="right-span-three">-</span>
+            <span class="right-span-one"><img class="img-header" src="images/addico.png"></span>
+            <span class="right-span-two">2</span>
+            <span class="right-span-one"><img class="img-header" src="images/subico.png"></span>
         </div>
     </div>
     <hr class="hr_style">
     <div class="div-middle">
-        <p class="div-middle-p"><span>注：</span>580/人（含税开票）</p>
+        <p class="div-middle-p"><span class="span-one">注：</span><span class="span-two">580/人（含税开票）</span></p>
     </div>
 </div>
 <div class="div-top">
     <div class="div-middle">
         <div>
-            <span class="left-span-one">普通票</span>
-            <span class="left-span-two">￥580</span>
+            <span class="left-span-one">团购票</span>
+            <span class="left-span-two">￥480</span>
         </div>
         <div>
-            <span class="right-span-one">+</span>
-            <span class="right-span-two">0</span>
-            <span class="right-span-three">-</span>
+            <span class="right-span-one"><img class="img-header" src="images/addico.png"></span>
+            <span class="right-span-two">23</span>
+            <span class="right-span-one"><img class="img-header" src="images/subico.png"></span>
         </div>
     </div>
     <hr class="hr_style">
     <div class="div-middle">
         <p class="div-middle-p"><span class="span-one">团：</span><span class="span-two">此门票为团购票，3人（含）以上480/人（含税开票）</span></p>
     </div>
+</div>
+
+<div class="div-buttom">
+    <p>合计：<span>￥5620</span></p>
+    <p>确定</p>
 </div>
 </body>
 </html>

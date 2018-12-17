@@ -79,7 +79,7 @@
     <p class="div-all-p"><span>费用：</span><span>￥480-580</span></p>
 </div>
 <div class="div-all" style="border-bottom: none">
-    <p class="div-p-buttom" id="enroll"><a href="ticket.jsp">立即报名</a></p>
+    <p class="div-p-buttom" id="enroll"><a href="wxapp/oauthDo">立即报名</a></p>
 </div>
 <script src="js/jquery.js"/>
 <script type="text/javascript">
