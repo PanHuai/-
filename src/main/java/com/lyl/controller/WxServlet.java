@@ -57,31 +57,18 @@ public class WxServlet{
     /**
      * 获取网页授权
      */
-    // https://open.weixin.qq.com/connect/oauth2/authorize?appid=wxf0e81c3bee622d60&redirect_uri=http%3A%2F%2Fnba.bluewebgame.com%2Foauth_response.php&response_type=code&scope=snsapi_userinfo&state=STATE#wechat_redirect
     @RequestMapping("/wxapp/oauthDo")
-    public void oauthDo(){
-
-        try {
-            String msg = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +appId+
-                    "&" +
-                    "redirect_uri= http://atmyh3.natappfree.cc/wxapp/oauth_callback" +
+    public String oauthDo(){
+        String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +appId+
+                    "&redirect_uri= http://atmyh3.natappfree.cc/wxapp/oauth_callback" +
                     "&response_type=code" +
                     "&scope=snsapi_userinfo" +
                     "&state=STATE#wechat_redirect";
 
-            URL url = new URL(msg);
-            String result = IOUtils.toString(url, "utf-8");
-            System.out.println(result);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-
-
-
-
-
+           // String result = IOUtils.toString(url, "utf-8");
+        return "redirect:"+url;//必须重定向，否则不能成功
     }
+
+
 
 }
