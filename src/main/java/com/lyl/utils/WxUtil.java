@@ -22,9 +22,11 @@ public class WxUtil {
     public void oauthCallBack(String code){
 
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid"+appId+
-                "&secret=SECRET"+
-                ;
-        =APPID&code=CODE&grant_type=authorization_code
+                "&secret=SECRET"+"&code="+code+"&grant_type=authorization_code";
+
+
+
+
 
 
     }
