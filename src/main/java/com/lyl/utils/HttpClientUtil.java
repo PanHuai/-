@@ -52,9 +52,11 @@ public class HttpClientUtil {
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");  // application/x-www-form-urlencoded  application/json
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Connection", "keep-Alive");
-        connection.setDoInput(true);
-        connection.setDoOutput(true);
-        connection.setUseCaches(false);
+        connection.setConnectTimeout(30000); // 设置连接主机超时（单位：毫秒)
+        connection.setReadTimeout(30000); // 设置从主机读取数据超时（单位：毫秒)
+        connection.setDoInput(true);// 设置是否从httpUrlConnection读入，默认情况下是true
+        connection.setDoOutput(true);// post请求参数要放在http正文内，顾设置成true，默认是false
+        connection.setUseCaches(false);// Post 请求不能使用缓存
         connection.setRequestMethod("GET");
         connection.connect();
         sb.setLength(0);

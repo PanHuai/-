@@ -124,10 +124,8 @@
             color: white;
             border-radius: 6% 0 0;
         }
-
-
-
     </style>
+    <script src="js/jquery-3.2.1.min.js"></script>
 </head>
 <body style="background-color: whitesmoke;margin: 3.5% 3.5% 0">
 <div class="div-top">

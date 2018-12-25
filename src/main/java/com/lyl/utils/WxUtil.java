@@ -10,8 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by 潘淮  on 2018/12/18.<br>
@@ -68,4 +67,31 @@ public class WxUtil {
         }
         return null;
     }
+
+    /**
+     * 预生成订单  统一下单接口
+     */
+    public static String pay(){
+        Map<String, String> params = new HashMap<>();
+        params.put("appid", "");    //公众账号ID
+        params.put("mch_id", "");   //商户号
+        params.put("nonce_str", "");  //随机字符串
+        params.put("body", "");      //商品描述
+        params.put("out_trade_no", "");  //商户订单号
+        params.put("total_fee", ""); //标价金额
+        params.put("spbill_create_ip", ""); //终端IP
+        params.put("notify_url", ""); //通知地址
+        params.put("trade_type", ""); //交易类型
+        Set<String> set = params.keySet();
+        List<String> list = new ArrayList<String>(set);
+        Collections.sort(list);
+        StringBuffer sb = new StringBuffer("");
+        for (String s : list) {
+            sb.append(s + "=" + params.get(s) + "&");
+        }
+        sb.append("key=" + ""); // 交易密码
+        return null;
+    }
+
+
 }
