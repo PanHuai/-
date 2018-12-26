@@ -1,11 +1,9 @@
 package com.lyl.controller;
 
 import com.google.gson.JsonObject;
-import com.lyl.utils.HttpClientUtil;
 import com.lyl.utils.SHA1;
 import com.lyl.utils.StringUtils;
 import com.lyl.utils.WxUtil;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,19 +14,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by 潘淮  on 2018/12/17.<br>
  */
 @Controller
-public class WxServlet{
-    private final Logger logger = LoggerFactory.getLogger(WxServlet.class);
+public class WxController {
+    private final Logger logger = LoggerFactory.getLogger(WxController.class);
 
     @Value("${wx_token}")
     private String wxToken;
@@ -65,7 +62,7 @@ public class WxServlet{
     /**
      * 获取网页授权
      */
-    @RequestMapping("/wxapp/oauthDo")
+    @RequestMapping(value = "/wxapp/oauthDo",method = RequestMethod.POST)
     public String oauthDo() throws UnsupportedEncodingException {
         String callback = URLEncoder.encode(localhost_url+"/wxapp/oauth_callback", "UTF-8");
         String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +appId+
@@ -81,7 +78,7 @@ public class WxServlet{
     /**
      * 通过code换取网页授权access_token
      */
-    @RequestMapping("/wxapp/oauth_callback")
+    @RequestMapping(value = "/wxapp/oauth_callback",method = RequestMethod.POST)
     public void oauthCallback(HttpServletRequest request){
         String code = request.getParameter("code");
         String state = request.getParameter("state");
@@ -94,6 +91,32 @@ public class WxServlet{
     }
 
 
+    /**
+     * 微信支付
+     */
+    @RequestMapping(value = "/wxapp/h5/pay",method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> wxPay_H5(HttpServletRequest request){
+        Map<String, Object> map = new HashMap<>();
+        try {
+             map = WxUtil.pay_h5(request, "", 1,"");
+            map.put("state", "success");
+        } catch (Exception e) {
+            logger.error("wxpp/h5/pay error:"+e);
+            map.put("state", "failed");
+        }
+        return map;
+    }
+
+    /**
+     * 微信支付回调
+     */
+    @RequestMapping("wxapp/h5/notif_callback")
+    public void callBack_h5(){
+
+
+
+    }
 
 
 

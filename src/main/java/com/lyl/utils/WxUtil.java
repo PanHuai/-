@@ -3,11 +3,22 @@ package com.lyl.utils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lyl.dto.UserInfoDto;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.servlet.ServletInputStream;
+import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -26,6 +37,9 @@ public class WxUtil {
 
     @Value("${appsecret}")
     private static String appsecret;
+
+    @Value("${mch_id}")
+    private static String mch_id;
 
     /**
      * 用户同意授权后 根据微信返回的code作为换取access_token的票据
@@ -71,27 +85,114 @@ public class WxUtil {
     /**
      * 预生成订单  统一下单接口
      */
-    public static String pay(){
-        Map<String, String> params = new HashMap<>();
-        params.put("appid", "");    //公众账号ID
-        params.put("mch_id", "");   //商户号
-        params.put("nonce_str", "");  //随机字符串
-        params.put("body", "");      //商品描述
-        params.put("out_trade_no", "");  //商户订单号
-        params.put("total_fee", ""); //标价金额
-        params.put("spbill_create_ip", ""); //终端IP
-        params.put("notify_url", ""); //通知地址
-        params.put("trade_type", ""); //交易类型
-        Set<String> set = params.keySet();
+    public static Map<String, Object> pay_h5(HttpServletRequest request,String notify_url,int payMoney,String no) throws Exception {
+        Map<String, Object> param = new HashMap<>();
+        param.put("appid", appId);    //公众账号ID
+        param.put("mch_id", mch_id);   //商户号
+        param.put("nonce_str", RandomString.getInstance().generate());  //随机字符串
+        param.put("body", "淮安精英人力资源订单在线支付");      //商品描述
+        param.put("out_trade_no", no);  //商户订单号
+        param.put("total_fee", payMoney); //标价金额
+        param.put("spbill_create_ip", IPUtil.get(request)); //终端IP
+        param.put("notify_url", notify_url); //通知地址
+        param.put("trade_type", "JSAPI"); //交易类型
+        Set<String> set = param.keySet();
         List<String> list = new ArrayList<String>(set);
         Collections.sort(list);
         StringBuffer sb = new StringBuffer("");
         for (String s : list) {
-            sb.append(s + "=" + params.get(s) + "&");
+            sb.append(s + "=" + param.get(s) + "&");
         }
         sb.append("key=" + ""); // 交易密码
-        return null;
+        String sign = MD5Util.MD5(sb.toString(), "UTF-8").toUpperCase();
+        param.put("sign", sign);
+        StringBuffer xml = new StringBuffer("");
+        xml.append("<xml>");
+        xml.append("<appid><![CDATA["+param.get("appid")+"]]></appid>");
+        xml.append("<mch_id><![CDATA["+param.get("mch_id")+"]]></mch_id>");
+        xml.append("<nonce_str><![CDATA["+param.get("nonce_str")+"]]></nonce_str> ");
+        xml.append("<body><![CDATA["+param.get("body")+"]]></body>");
+        xml.append("<out_trade_no><![CDATA["+param.get("out_trade_no")+"]]></out_trade_no> ");
+        xml.append("<total_fee><![CDATA["+param.get("total_fee")+"]]></total_fee>");
+        xml.append("<spbill_create_ip><![CDATA["+param.get("spbill_create_ip")+"]]></spbill_create_ip> ");
+        xml.append("<notify_url><![CDATA["+param.get("notify_url")+"]]></notify_url>");
+        xml.append("<trade_type><![CDATA["+param.get("trade_type")+"]]></trade_type> ");
+        xml.append("</xml>");
+        URL url = new URL("https://api.mch.weixin.qq.com/pay/unifiedorder");
+        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+        conn.setRequestMethod("POST");
+        conn.setConnectTimeout(30000);  // 单位 毫秒
+        conn.setReadTimeout(30000);
+        conn.setDoInput(true);
+        conn.setDoOutput(true);
+        conn.setUseCaches(false);
+        OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
+        os.write(URLEncoder.encode(xml.toString(),"UTF-8"));
+        os.flush();
+        os.close();
+        InputStream is = conn.getInputStream();
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(is);
+        Map<String, String> map = new HashMap<>();
+        //得到xml根元素
+        Element root = document.getRootElement();
+        //得到根元素的所有子节点
+        List<Element> eList = root.elements();
+        for (Element element : eList) {
+            map.put(element.getName(), element.getText());
+        }
+        if (is != null){
+            is.close();
+        }
+        conn.disconnect();
+        param.clear();
+        if (map.get("return_code").equals("SUCCESS") && map.get("result_code").equals("SUCCESS")){
+            String prepay_id = map.get("prepay_id");
+            String nonce_str = map.get("nonce_str");
+            param.put("appId", appId);
+            param.put("timeStamp", System.currentTimeMillis()+"");
+            param.put("nonceStr", nonce_str);
+            param.put("package", "prepay_id="+prepay_id);
+            param.put("signType", "MD5");
+            set = param.keySet();
+            list = new ArrayList<String>(set);
+            Collections.sort(list);
+            sb = new StringBuffer("");
+            for (String s : list) {
+                sb.append(s + "=" + param.get(s) + "&");
+            }
+            sb.append("key=" + ""); // 交易密码
+            String paySign = MD5Util.MD5(sb.toString(), "UTF-8").toUpperCase();
+            param.put("paySign", paySign);
+        }else {
+            logger.error("wx pay/unifiedorder error   return_msg:"+map.get("return_msg")+" err_code:"+map.get("err_code"));
+        }
+        return param;
     }
+
+    /**
+     * h5支付回调
+     */
+    public static void callBack_h5(HttpServletRequest request) throws Exception {
+        InputStream is = request.getInputStream();
+        SAXReader reader = new SAXReader();
+        Document document = reader.read(is);
+        Map<String, String> map = new HashMap<>();
+        //得到xml根元素
+        Element root = document.getRootElement();
+        //得到根元素的所有子节点
+        List<Element> eList = root.elements();
+        for (Element element : eList) {
+            map.put(element.getName(), element.getText());
+        }
+        if (map.get("return_code").equals("SUCCESS") && map.get("result_code").equals("SUCCESS")){
+
+        }else {
+            logger.error("wx pay/unifiedorder callback error   return_msg:"+map.get("return_msg")+" err_code:"+map.get("err_code"));
+        }
+
+    }
+
 
 
 }
