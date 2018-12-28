@@ -165,7 +165,22 @@
 
 <div class="div-buttom">
     <p>合计：<span>￥5620</span></p>
-    <p>确定</p>
+    <p id="submitDo">确定</p>
 </div>
 </body>
+<script type="text/javascript">
+    $("#submitDo").click(function () {
+        $.ajax({
+            url:'/wxapp/h5/pay',
+            type:'post',
+            data:{
+                "id":1
+            },
+            dataType:'json',
+            success : function (data) {
+                console(data);
+            }
+        })
+    })
+</script>
 </html>

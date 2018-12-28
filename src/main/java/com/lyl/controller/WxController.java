@@ -1,11 +1,13 @@
 package com.lyl.controller;
 
 import com.google.gson.JsonObject;
+import com.lyl.service.OrderService;
 import com.lyl.utils.SHA1;
 import com.lyl.utils.StringUtils;
 import com.lyl.utils.WxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +39,8 @@ public class WxController {
     private String appsecret;
     @Value("${localhost_url}")
     private String localhost_url;
+    @Autowired
+    private OrderService orderService;
 
     @RequestMapping(value = "/wxapp",method = RequestMethod.GET)
     public void checkDo(HttpServletRequest request, HttpServletResponse response){
@@ -95,7 +99,6 @@ public class WxController {
      * 微信支付
      */
     @RequestMapping(value = "/wxapp/h5/pay",method = RequestMethod.POST)
-    @ResponseBody
     public Map<String,Object> wxPay_H5(HttpServletRequest request){
         Map<String, Object> map = new HashMap<>();
         try {
@@ -112,10 +115,18 @@ public class WxController {
      * 微信支付回调
      */
     @RequestMapping("wxapp/h5/notif_callback")
-    public void callBack_h5(){
+    public void callBack_h5(HttpServletRequest request,HttpServletResponse response){
+        try {
+            WxUtil.callBack_h5(request, new WxUtil.CallBack() {
+                @Override
+                public int callBack(String pay_no, String no) {
 
-
-
+                    return 0;
+                }
+            },response);
+        } catch (Exception e) {
+            logger.error("wxapp/h5/notif_callback errpr:"+e);
+        }
     }
 
 

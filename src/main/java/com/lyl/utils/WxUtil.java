@@ -3,6 +3,7 @@ package com.lyl.utils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lyl.dto.UserInfoDto;
+import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -13,9 +14,11 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -166,6 +169,7 @@ public class WxUtil {
             param.put("paySign", paySign);
         }else {
             logger.error("wx pay/unifiedorder error   return_msg:"+map.get("return_msg")+" err_code:"+map.get("err_code"));
+            throw new RuntimeException("h5订单支付失败，出现异常");
         }
         return param;
     }
@@ -173,7 +177,7 @@ public class WxUtil {
     /**
      * h5支付回调
      */
-    public static void callBack_h5(HttpServletRequest request) throws Exception {
+    public static void callBack_h5(HttpServletRequest request, CallBack callBack, HttpServletResponse response) throws Exception {
         InputStream is = request.getInputStream();
         SAXReader reader = new SAXReader();
         Document document = reader.read(is);
@@ -186,11 +190,33 @@ public class WxUtil {
             map.put(element.getName(), element.getText());
         }
         if (map.get("return_code").equals("SUCCESS") && map.get("result_code").equals("SUCCESS")){
-
+            //map.get("is_subscribe");  // 用户是否关注公众账号，Y-关注，N-未关注
+            String pay_no = map.get("transaction_id");  // 微信支付订单号
+            String no = map.get("out_trade_no");
+            int result = callBack.callBack(pay_no, no);
+            if (result==0) {
+                StringBuffer sb = new StringBuffer();
+                sb.append("<xml>");
+                sb.append("<return_code><![CDATA[SUCCESS]]></return_code>");
+                sb.append("<return_msg><![CDATA[OK]]></return_msg>");
+                sb.append("</xml>");
+                PrintWriter writer = response.getWriter();
+                writer.print(URLEncoder.encode(sb.toString(), "UTF-8"));
+                logger.info("wx pay/unifiedorder callback success transaction_id:"+pay_no+" out_trade_no"+no);
+            }else {
+                logger.error("wx pay/unifiedorder callback success but set failed transaction_id:"+pay_no+" out_trade_no"+no);
+            }
         }else {
             logger.error("wx pay/unifiedorder callback error   return_msg:"+map.get("return_msg")+" err_code:"+map.get("err_code"));
+            throw new RuntimeException("h5订单回调失败，出现异常");
         }
+    }
 
+    /**
+     * 回调处理方法
+     */
+    public static abstract class CallBack{
+        public abstract int callBack(String pay_no,String no);
     }
 
 
