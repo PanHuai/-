@@ -10,4 +10,6 @@ public interface OrderService {
     public Order getById(int id);
 
     public int wxPaySuccess(String pay_no,String no);
+
+    public int add(Order order);
 }

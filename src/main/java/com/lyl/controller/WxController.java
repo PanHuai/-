@@ -1,6 +1,7 @@
 package com.lyl.controller;
 
 import com.google.gson.JsonObject;
+import com.lyl.model.Order;
 import com.lyl.service.OrderService;
 import com.lyl.utils.SHA1;
 import com.lyl.utils.StringUtils;
@@ -63,6 +64,8 @@ public class WxController {
         }
     }
 
+    
+
     /**
      * 获取网页授权
      */
@@ -98,15 +101,23 @@ public class WxController {
     /**
      * 微信支付
      */
-    @RequestMapping(value = "/wxapp/h5/pay",method = RequestMethod.POST)
+    @RequestMapping(value = "/api/user/wx_h5/pay",method = RequestMethod.POST)
+    @ResponseBody
     public Map<String,Object> wxPay_H5(HttpServletRequest request){
+        int orderId = Integer.valueOf(request.getParameter("orderId"));
+        Order order = orderService.getById(orderId);
+        if (order == null){
+            throw new RuntimeException("订单信息为空");
+        }
         Map<String, Object> map = new HashMap<>();
         try {
-             map = WxUtil.pay_h5(request, "", 1,"");
+            map = WxUtil.pay_h5(request, localhost_url+"/wxapp/h5/notif_callback", 1,order.getNo());
             map.put("state", "success");
+            logger.info(map.toString());
         } catch (Exception e) {
             logger.error("wxpp/h5/pay error:"+e);
             map.put("state", "failed");
+            map.put("msg", e);
         }
         return map;
     }
@@ -115,17 +126,19 @@ public class WxController {
      * 微信支付回调
      */
     @RequestMapping("wxapp/h5/notif_callback")
-    public void callBack_h5(HttpServletRequest request,HttpServletResponse response){
+    public void callBack_h5(final HttpServletRequest request, HttpServletResponse response){
         try {
             WxUtil.callBack_h5(request, new WxUtil.CallBack() {
                 @Override
                 public int callBack(String pay_no, String no) {
-
-                    return 0;
+                    logger.info("wxapp/h5/notif_callback go ...pay_no:"+pay_no+",no:"+no);
+                    int result = orderService.wxPaySuccess(pay_no, no);
+                    logger.info("wxapp/h5/notif_callback  result:"+request);
+                    return result;
                 }
             },response);
         } catch (Exception e) {
-            logger.error("wxapp/h5/notif_callback errpr:"+e);
+            logger.error("wxapp/h5/notif_callback error:"+e);
         }
     }
 

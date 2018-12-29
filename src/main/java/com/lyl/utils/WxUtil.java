@@ -11,6 +11,7 @@ import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +30,7 @@ import java.util.*;
 /**
  * Created by 潘淮  on 2018/12/18.<br>
  */
+@Component
 public class WxUtil {
     private static final Logger logger = LoggerFactory.getLogger(WxUtil.class);
 
@@ -217,6 +219,13 @@ public class WxUtil {
      */
     public static abstract class CallBack{
         public abstract int callBack(String pay_no,String no);
+    }
+
+    public static void dd(){
+        System.out.println(appId);
+        System.out.println(wxToken);
+        System.out.println(appsecret);
+        System.out.println(mch_id);
     }
 
 

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 设置log4j2的自身log级别为warn -->
+<!-- OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<Configuration status="off" monitorInterval="1800">
+
+    <properties>
+        <property name="LOG_HOME">/opt/logs</property>
+    </properties>
+
+
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %-5p (%F:%L) - %m%n"/>
+        </Console>
+
+        <RollingRandomAccessFile name="InfoLog"
+                                 fileName="${LOG_HOME}/info.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/info-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="INFO"/>
+                <ThresholdFilter level="WARN" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout
+                    pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="WarnLog"
+                                 fileName="${LOG_HOME}/warn.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/warn-%d{yyyy-MM-dd}-%i.log.gz">
+            <Filters>
+                <ThresholdFilter level="WARN"/>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="NEUTRAL"/>
+            </Filters>
+            <PatternLayout
+                    pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingRandomAccessFile>
+
+        <RollingRandomAccessFile name="ErrorLog"
+                                 fileName="${LOG_HOME}/error.log"
+                                 filePattern="${LOG_HOME}/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log.gz">
+            <ThresholdFilter level="ERROR"/>
+            <PatternLayout
+                    pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="30"/>
+        </RollingRandomAccessFile>
+    </Appenders>
+
+    <Loggers>
+        <!-- 3rdparty Loggers -->
+        <logger name="org.springframework.core" level="info">
+        </logger>
+        <logger name="org.springframework.beans" level="info">
+        </logger>
+        <logger name="org.springframework.context" level="info">
+        </logger>
+        <logger name="org.springframework.web" level="info">
+        </logger>
+        <logger name="java.sql.*" level="debug" additivity="true"></logger>
+                <logger name="java.sql.ResultSet" level="debug" additivity="true"></logger>
+
+        <logger name="com.lyl" level="info" includeLocation="true" additivity="false">
+            <appender-ref ref="ErrorLog"/>
+            <appender-ref ref="WarnLog"/>
+            <appender-ref ref="InfoLog"/>
+            <appender-ref ref="Console"/>
+        </logger>
+
+        <root level="all" includeLocation="true">
+            <appender-ref ref="ErrorLog"/>
+            <appender-ref ref="WarnLog"/>
+            <appender-ref ref="InfoLog"/>
+            <appender-ref ref="Console"/>
+        </root>
+    </Loggers>
+</Configuration>

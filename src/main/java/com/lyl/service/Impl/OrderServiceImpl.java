@@ -6,6 +6,7 @@ import com.lyl.mapper.OrderMapper;
 import com.lyl.model.Order;
 import com.lyl.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 /**
  * Created by 潘淮  on 2018/12/28.<br>
  */
+@Service("OrderService")
 public class OrderServiceImpl implements OrderService {
 
     @Autowired
@@ -39,10 +41,11 @@ public class OrderServiceImpl implements OrderService {
                 order.setState(OrderEnum.three.getCode());
             }
         }
-
-
-
-
         return 0;
+    }
+
+    @Override
+    public int add(Order order) {
+        return orderMapper.add(order);
     }
 }

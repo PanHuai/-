@@ -52,19 +52,22 @@
             font-size: 1.6rem;
             color: #f9bd06;
         }
-        .right-span-one{
+
+        .right-span-one {
             width: 15%;
             display: inline-block;
             float: right;
         }
-        .right-span-two{
+
+        .right-span-two {
             width: 20%;
             display: inline-block;
             float: right;
             text-align: center;
             font-size: 1.23rem;
         }
-        .hr_style{
+
+        .hr_style {
             width: 94%;
             border: none;
             text-align: center;
@@ -73,7 +76,8 @@
             float: left;
             margin: 4% 0 0 3%;
         }
-        .div-middle-p{
+
+        .div-middle-p {
             float: left;
             font-size: 0.8rem;
             width: 93%;
@@ -81,31 +85,36 @@
             color: #AAAAAA;
             padding-left: 7%;
         }
-        .span-one{
+
+        .span-one {
             display: block;
             float: left;
             color: #f9bd06;
             width: 9%;
         }
+
         .span-two {
             display: block;
             float: right;
             width: 91%;
         }
+
         .img-header {
             width: auto;
             height: auto;
             max-height: 100%;
             max-width: 100%;
         }
-        .div-buttom{
+
+        .div-buttom {
             width: 100%;
             position: absolute;
             bottom: 0;
             left: 0;
             height: 50px;
         }
-        .div-buttom p:nth-of-type(1){
+
+        .div-buttom p:nth-of-type(1) {
             width: 40%;
             height: 100%;
             line-height: 50px;
@@ -113,7 +122,8 @@
             padding-left: 3.5%;
             margin: 0;
         }
-        .div-buttom p:nth-of-type(2){
+
+        .div-buttom p:nth-of-type(2) {
             width: 40%;
             margin: 0;
             float: right;
@@ -159,28 +169,80 @@
     </div>
     <hr class="hr_style">
     <div class="div-middle">
-        <p class="div-middle-p"><span class="span-one">团：</span><span class="span-two">此门票为团购票，3人（含）以上480/人（含税开票）</span></p>
+        <p class="div-middle-p"><span class="span-one">团：</span><span class="span-two">此门票为团购票，3人（含）以上480/人（含税开票）</span>
+        </p>
     </div>
 </div>
 
 <div class="div-buttom">
     <p>合计：<span>￥5620</span></p>
-    <p id="submitDo">确定</p>
+    <p onclick="submitDo()">确定</p>
 </div>
 </body>
 <script type="text/javascript">
-    $("#submitDo").click(function () {
+
+    function submitDo() {
+        params = {
+            "userId":"1"
+        }
         $.ajax({
-            url:'/wxapp/h5/pay',
-            type:'post',
-            data:{
-                "id":1
+            url: 'api/user/order/adds',
+            type: 'post',
+            data: JSON.stringify(params),
+            dataType: 'json',
+            headers: {
+                "Content-Type": "application/json"
             },
-            dataType:'json',
-            success : function (data) {
-                console(data);
+            success: function (data) {
+                /*payMoney(data.data);*/
+            }
+        });
+    }
+
+    function onBridgeReady(id) {
+        $.ajax({
+            url: 'api/user/wx_h5/pay',
+            type: 'post',
+            data: {
+                "orderId": id
+            },
+            dataType: 'json',
+            success: function (data) {
+                WeixinJSBridge.invoke(
+                    'getBrandWCPayRequest', {
+                        "appId": "" + data.appId,                 //公众号名称，由商户传入
+                        "timeStamp": "" + data.timeStamp,         //时间戳，自1970年以来的秒数
+                        "nonceStr": "" + data.nonceStr,           //随机串
+                        "package": "" + data.package,
+                        "signType": "" + data.signType,           //微信签名方式：
+                        "paySign": "" + data.paySign              //微信签名
+                    },
+                    function (res) {
+                        if (res.err_msg == "get_brand_wcpay_request:ok") {
+                            alert("支付成功");
+                        } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
+
+                        } else if (res.err_msg == "get_brand_wcpay_request:fail") {
+
+                        }
+                    });
             }
         })
-    })
+    }
+
+    function payMoney(id) {
+        if (typeof WeixinJSBridge == "undefined") {
+            if (document.addEventListener) {
+                document.addEventListener('WeixinJSBridgeReady', onBridgeReady(id), false);
+            } else if (document.attachEvent) {
+                document.attachEvent('WeixinJSBridgeReady', onBridgeReady(id));
+                document.attachEvent('onWeixinJSBridgeReady', onBridgeReady(id));
+            }
+        } else {
+            onBridgeReady(id);
+        }
+    }
+
+
 </script>
 </html>

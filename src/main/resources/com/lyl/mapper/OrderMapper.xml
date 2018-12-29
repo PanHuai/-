@@ -2,14 +2,18 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyl.mapper.OrderMapper">
     <select id="getById" resultType="Order">
-        SELECT * FROM order WHERE id = #{id};
+        SELECT * FROM o_order WHERE id = #{id};
     </select>
 
     <select id="getByNo" resultType="Order">
-        SELECT * FROM order WHERE no = #{no};
+        SELECT * FROM o_order WHERE no = #{no};
     </select>
 
     <update id="update" parameterType="Order">
-        UPDATE order SET pay_no= #{order.pay_no},payTime = #{order.payTime},payType = #{order.payType},state= #{order.state} WHERE id = #{order.id};
+        UPDATE o_order SET pay_no= #{pay_no},payTime = #{payTime},payType = #{payType},state= #{state} WHERE id = #{id};
     </update>
+
+    <insert id="add" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
+        INSERT o_order (no,createTime,state) VALUES (#{no},#{createTime},#{state})
+    </insert>
 </mapper>

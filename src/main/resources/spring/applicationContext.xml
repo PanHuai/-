@@ -60,12 +60,14 @@
     <!-- 2.扫描的包路径，这里不扫描被@Controller注解的类 --><!--使用<context:component-scan/> 可以不在配置<context:annotation-config/> -->
     <context:component-scan base-package="com.lyl.service" />
     <context:component-scan base-package="com.lyl.mapper" />
+    <context:component-scan base-package="com.lyl.utils" />
 
     <!-- spring和MyBatis完美整合，不需要mybatis的配置映射文件 -->
     <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
         <property name="dataSource" ref="dataSource"/>
         <!-- 自动扫描mappering.xml文件 -->
-       <property name="mapperLocations" value="classpath*:com/lyl/mapper/*.xml"></property>
+        <property name="mapperLocations" value="classpath*:com/lyl/mapper/*.xml"></property>
+        <property name="configLocation" value="classpath:spring/spring-mybatis.xml"></property>
     </bean>
     <!-- DAO接口所在包名，Spring会自动查找其下的类 ,自动扫描了所有的XxxxMapper.xml对应的mapper接口文件,只要Mapper接口类和Mapper映射文件对应起来就可以了-->
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -84,7 +86,5 @@
     <!-- 配置基于注解的声明式事务 -->
     <!-- enables scanning for @Transactional annotations -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
-
-    <import resource="classpath:spring/spring-mybatis.xml"/>
 
 </beans>
