@@ -5,7 +5,6 @@ import com.lyl.model.Order;
 import com.lyl.service.OrderService;
 import com.lyl.utils.RandomString;
 import com.lyl.utils.Response;
-import com.lyl.utils.WxUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -30,24 +28,11 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
 
-    @Autowired
-    private WxUtil wxUtil;
-
     /**
      * 我的订单详情
      */
     @RequestMapping("/api/user/order/list")
     public Response getAll(@RequestBody Map<String, Object> map) {
-        return null;
-    }
-
-    /**
-     * 新增订单
-     */
-    @RequestMapping("/api/user/order/adds")
-    @ResponseBody
-    public Response sss(@RequestBody Map<String, String> map){
-        wxUtil.dd();
         return null;
     }
 

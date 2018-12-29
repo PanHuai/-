@@ -42,6 +42,8 @@ public class WxController {
     private String localhost_url;
     @Autowired
     private OrderService orderService;
+    @Autowired
+    private WxUtil wxUtil;
 
     @RequestMapping(value = "/wxapp",method = RequestMethod.GET)
     public void checkDo(HttpServletRequest request, HttpServletResponse response){
@@ -64,7 +66,7 @@ public class WxController {
         }
     }
 
-    
+
 
     /**
      * 获取网页授权
@@ -90,7 +92,7 @@ public class WxController {
         String code = request.getParameter("code");
         String state = request.getParameter("state");
         if (StringUtils.isNotBlank(code)){
-            JsonObject object = WxUtil.oauthCallBack(code,appId,appsecret);
+            JsonObject object = wxUtil.oauthCallBack(code,appId,appsecret);
 
 
         }
@@ -111,7 +113,7 @@ public class WxController {
         }
         Map<String, Object> map = new HashMap<>();
         try {
-            map = WxUtil.pay_h5(request, localhost_url+"/wxapp/h5/notif_callback", 1,order.getNo());
+            map = wxUtil.pay_h5(request, localhost_url+"/wxapp/h5/notif_callback", 1,order.getNo());
             map.put("state", "success");
             logger.info(map.toString());
         } catch (Exception e) {
@@ -128,7 +130,7 @@ public class WxController {
     @RequestMapping("wxapp/h5/notif_callback")
     public void callBack_h5(final HttpServletRequest request, HttpServletResponse response){
         try {
-            WxUtil.callBack_h5(request, new WxUtil.CallBack() {
+            wxUtil.callBack_h5(request, new WxUtil.CallBack() {
                 @Override
                 public int callBack(String pay_no, String no) {
                     logger.info("wxapp/h5/notif_callback go ...pay_no:"+pay_no+",no:"+no);

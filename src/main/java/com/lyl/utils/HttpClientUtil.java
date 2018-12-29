@@ -123,8 +123,8 @@ public class HttpClientUtil {
     /**
      * https 请求
      */
-    public static String httsRequest(String requestUrl,String requestMethod,Map<String,Object> map) throws NoSuchAlgorithmException, KeyManagementException, IOException {
-        logger.info("send Https ask URL:"+requestUrl+" method:"+requestMethod);
+    public static String doGetHttps(String requestUrl,Map<String,Object> map)
+            throws NoSuchAlgorithmException, KeyManagementException, IOException {
         // 创建SSLContext对象，并使用我们指定的信任管理器初始化
         SSLContext sslContext = SSLContext.getInstance("SSL");
         TrustManager[] tm = {new MyX509TrustManager()};
@@ -143,40 +143,64 @@ public class HttpClientUtil {
             }
             logger.info("send Https ask request:"+sb.substring(0,sb.length()-1));
         }
-
         URL url = null;
-        if ("GET".equalsIgnoreCase(requestMethod)){
             if (sb !=null && sb.length()>0){
                 url = new URL(requestUrl + "?" + sb.substring(0, sb.length() - 1));
             }else {
                 url = new URL(requestUrl);
             }
-        }else {
-            url = new URL(requestUrl);
-        }
+
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setSSLSocketFactory(ssf);
         conn.setDoOutput(true);
         conn.setDoInput(true);
         conn.setUseCaches(false);
-        conn.setRequestMethod(requestMethod);
-        if ("GET".equalsIgnoreCase(requestMethod)){
-            conn.connect();
-        }else {
-            // 向服务器端写内容
-            OutputStreamWriter os = null;
-            if (sb != null && sb.length()>0) {
-                os = new OutputStreamWriter(conn.getOutputStream());
-                os.write(URLEncoder.encode(sb.substring(0,sb.length()-1),"UTF-8"));
-                os.flush();
-                os.close();
-            }
-        }
-
+        conn.setRequestMethod("GET");
+        conn.connect();
         // 从输入流读取返回内容
         InputStream is = conn.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         sb.setLength(0);
+        String line = null;
+        while ((line=br.readLine()) != null){
+            sb.append(line);
+        }
+        br.close();
+        is.close();
+        conn.disconnect();
+        logger.info("response doHttps msg:"+sb.toString());
+        return sb.toString();
+    }
+
+    public static String doPostHttps(String requestUrl,String data)
+            throws NoSuchAlgorithmException, KeyManagementException, IOException {
+        // 创建SSLContext对象，并使用我们指定的信任管理器初始化
+        SSLContext sslContext = SSLContext.getInstance("SSL");
+        TrustManager[] tm = {new MyX509TrustManager()};
+        // 初始化
+        sslContext.init(null,tm,new SecureRandom());
+        // 获取SSLSocketFactory对象
+        SSLSocketFactory ssf = sslContext.getSocketFactory();
+        URL url = new URL(requestUrl);
+        HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
+        conn.setSSLSocketFactory(ssf);
+        conn.setDoOutput(true);
+        conn.setDoInput(true);
+        conn.setUseCaches(false);
+        conn.setRequestMethod("POST");
+        if (data != null){
+            OutputStream outputStream = conn.getOutputStream();
+            OutputStreamWriter os = new OutputStreamWriter(outputStream);
+            os.write(URLEncoder.encode(data,"UTF-8"));
+            os.flush();
+            outputStream.flush();
+            os.close();
+            outputStream.close();
+        }
+        // 从输入流读取返回内容
+        InputStream is = conn.getInputStream();
+        BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
+        StringBuffer sb = new StringBuffer("");
         String line = null;
         while ((line=br.readLine()) != null){
             sb.append(line);

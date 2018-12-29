@@ -35,16 +35,19 @@ public class WxUtil {
     private static final Logger logger = LoggerFactory.getLogger(WxUtil.class);
 
     @Value("${wx_token}")
-    private static String wxToken;
+    private String wxToken;
 
     @Value("${appId}")
-    private static String appId;
+    private String appId;
 
     @Value("${appsecret}")
-    private static String appsecret;
+    private String appsecret;
+
+    @Value("${mch_key}")
+    private String mch_key;
 
     @Value("${mch_id}")
-    private static String mch_id;
+    private String mch_id;
 
     /**
      * 用户同意授权后 根据微信返回的code作为换取access_token的票据
@@ -56,7 +59,7 @@ public class WxUtil {
      *  String errcode // 错误代码
      *  String errmsg  // 错误信息
      */
-    public static JsonObject oauthCallBack(String code,String appId,String appsecret){
+    public JsonObject oauthCallBack(String code,String appId,String appsecret){
 
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+appId+
                 "&secret="+appsecret+"&code="+code+"&grant_type=authorization_code";
@@ -71,7 +74,7 @@ public class WxUtil {
                 map.put("lang", "zh_CN");
                 // 拉取用户信息
                 try {
-                    result = HttpClientUtil.httsRequest("https://api.weixin.qq.com/sns/userinfo", "GET", map);
+                    result = HttpClientUtil.doGetHttps("https://api.weixin.qq.com/sns/userinfo", map);
                     UserInfoDto userInfoDto = (UserInfoDto) Gson.toBean(result, UserInfoDto.class);
                     logger.info("ask wx userinfo result:"+result);
                 } catch (NoSuchAlgorithmException e) {
@@ -90,7 +93,7 @@ public class WxUtil {
     /**
      * 预生成订单  统一下单接口
      */
-    public static Map<String, Object> pay_h5(HttpServletRequest request,String notify_url,int payMoney,String no) throws Exception {
+    public Map<String, Object> pay_h5(HttpServletRequest request,String notify_url,int payMoney,String no) throws Exception {
         Map<String, Object> param = new HashMap<>();
         param.put("appid", appId);    //公众账号ID
         param.put("mch_id", mch_id);   //商户号
@@ -108,7 +111,7 @@ public class WxUtil {
         for (String s : list) {
             sb.append(s + "=" + param.get(s) + "&");
         }
-        sb.append("key=" + ""); // 交易密码
+        sb.append("key=" + mch_key); // 交易密码
         String sign = MD5Util.MD5(sb.toString(), "UTF-8").toUpperCase();
         param.put("sign", sign);
         StringBuffer xml = new StringBuffer("");
@@ -151,6 +154,7 @@ public class WxUtil {
         }
         conn.disconnect();
         param.clear();
+        logger.info("pay_h5 result:"+map.toString());
         if (map.get("return_code").equals("SUCCESS") && map.get("result_code").equals("SUCCESS")){
             String prepay_id = map.get("prepay_id");
             String nonce_str = map.get("nonce_str");
@@ -166,7 +170,7 @@ public class WxUtil {
             for (String s : list) {
                 sb.append(s + "=" + param.get(s) + "&");
             }
-            sb.append("key=" + ""); // 交易密码
+            sb.append("key=" + mch_key); // 交易密码
             String paySign = MD5Util.MD5(sb.toString(), "UTF-8").toUpperCase();
             param.put("paySign", paySign);
         }else {
@@ -179,7 +183,7 @@ public class WxUtil {
     /**
      * h5支付回调
      */
-    public static void callBack_h5(HttpServletRequest request, CallBack callBack, HttpServletResponse response) throws Exception {
+    public void callBack_h5(HttpServletRequest request, CallBack callBack, HttpServletResponse response) throws Exception {
         InputStream is = request.getInputStream();
         SAXReader reader = new SAXReader();
         Document document = reader.read(is);
@@ -221,7 +225,7 @@ public class WxUtil {
         public abstract int callBack(String pay_no,String no);
     }
 
-    public static void dd(){
+    public void dd(){
         System.out.println(appId);
         System.out.println(wxToken);
         System.out.println(appsecret);

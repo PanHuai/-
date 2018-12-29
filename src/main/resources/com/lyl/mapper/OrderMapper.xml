@@ -14,6 +14,6 @@
     </update>
 
     <insert id="add" parameterType="Order" useGeneratedKeys="true" keyProperty="id">
-        INSERT o_order (no,createTime,state) VALUES (#{no},#{createTime},#{state})
+        INSERT INTO  o_order (no,createTime,state) VALUES (#{no},#{createTime},#{state})
     </insert>
 </mapper>
