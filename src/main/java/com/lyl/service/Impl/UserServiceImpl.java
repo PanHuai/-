@@ -5,6 +5,7 @@ import com.lyl.model.User;
 import com.lyl.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by 潘淮  on 2018/12/30.<br>
@@ -21,11 +22,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public int add(User user) {
         return userMapper.add(user);
     }
 
     @Override
+    @Transactional
     public int update(User user) {
         return userMapper.update(user);
     }

@@ -74,7 +74,7 @@ public class WxUtil {
             logger.warn("根据code获取授权凭证access_token  result:"+result);
             JsonObject object = new JsonParser().parse(result).getAsJsonObject();
             if (object.get("errcode") == null){
-                String openid = object.get("access_token").getAsString();
+                String openid = object.get("openid").getAsString();
                 User user = userService.getByOpenId(openid);
                 if (user == null){
                     Map<String, Object> map = new HashMap<>();

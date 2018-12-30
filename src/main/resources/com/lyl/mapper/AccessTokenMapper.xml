@@ -3,15 +3,15 @@
 <mapper namespace="com.lyl.mapper.AccessTokenMapper">
 
     <select id="get" resultMap="xx">
-        SELECT id,access_token,expires_in,beginTime FROM o_access_token
+        SELECT id,access_token,expires_in,beginTime,version FROM o_access_token
     </select>
 
     <insert id="add" parameterType="AccessToken">
-        INSERT INTO o_access_token (access_token,expires_in,beginTime) VALUES (#{access_token},#{expires_in},#{beginTime});
+        INSERT INTO o_access_token (access_token,expires_in,beginTime,version) VALUES (#{access_token},#{expires_in},#{beginTime},#{version});
     </insert>
 
     <update id="updata" parameterType="AccessToken">
-        UPDATE o_access_token SET access_token = #{access_token},expires_in = #{expires_in},beginTime = #{beginTime} WHERE id = #{id};
+        UPDATE o_access_token SET access_token = #{access_token},expires_in = #{expires_in},beginTime = #{beginTime},version= #{version+1} WHERE id = #{id} and version = #{version};
     </update>
 
     <resultMap id="xx" type="AccessToken">
@@ -19,5 +19,6 @@
         <result column="access_token" property="access_token"></result>
         <result column="expires_in" property="expires_in"></result>
         <result column="beginTime" property="beginTime"></result>
+        <result column="version" property="version"></result>
     </resultMap>
 </mapper>

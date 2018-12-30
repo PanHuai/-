@@ -221,9 +221,9 @@
                         if (res.err_msg == "get_brand_wcpay_request:ok") {
                             alert("支付成功");
                         } else if (res.err_msg == "get_brand_wcpay_request:cancel") {
-
+                            alert("取消支付");
                         } else if (res.err_msg == "get_brand_wcpay_request:fail") {
-
+                            alert("支付失败");
                         }
                     });
             }

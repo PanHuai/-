@@ -15,14 +15,17 @@ public class AccessToken {
 
     private LocalDateTime beginTime;
 
-    public AccessToken(int id, String access_token, Long expires_in, LocalDateTime beginTime) {
+    private int version;
+
+    public AccessToken() {
+    }
+
+    public AccessToken(int id, String access_token, Long expires_in, LocalDateTime beginTime, int version) {
         this.id = id;
         this.access_token = access_token;
         this.expires_in = expires_in;
         this.beginTime = beginTime;
-    }
-
-    public AccessToken() {
+        this.version = version;
     }
 
     public int getId() {
@@ -55,5 +58,13 @@ public class AccessToken {
 
     public void setBeginTime(LocalDateTime beginTime) {
         this.beginTime = beginTime;
+    }
+
+    public int getVersion() {
+        return version;
+    }
+
+    public void setVersion(int version) {
+        this.version = version;
     }
 }

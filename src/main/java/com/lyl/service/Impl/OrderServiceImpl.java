@@ -45,6 +45,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public int add(Order order) {
         return orderMapper.add(order);
     }

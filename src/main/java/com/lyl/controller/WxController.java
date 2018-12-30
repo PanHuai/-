@@ -70,7 +70,7 @@ public class WxController {
     /**
      * 获取网页授权
      */
-    @RequestMapping(value = "/wxapp/oauthDo",method = RequestMethod.POST)
+    @RequestMapping(value = "/wxapp/oauthDo",method = RequestMethod.GET)
     public String oauthDo() throws UnsupportedEncodingException {
         String callback = URLEncoder.encode(localhost_url+"/wxapp/oauth_callback", "UTF-8");
         String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +appId+
@@ -85,7 +85,7 @@ public class WxController {
     /**
      * 通过code换取网页授权access_token
      */
-    @RequestMapping(value = "/wxapp/oauth_callback",method = RequestMethod.POST)
+    @RequestMapping(value = "/wxapp/oauth_callback",method = RequestMethod.GET)
     public String oauthCallback(HttpServletRequest request){
         String code = request.getParameter("code");
         String state = request.getParameter("state");
@@ -97,11 +97,20 @@ public class WxController {
                 return "redirect:/wxapp/oauthDo";
             }
         }
-        return "/index";
+        return "redirect:/ticket?state=success";
     }
 
+    @RequestMapping("/ticket")
+    public String ticket(HttpServletRequest request){
+        String state = request.getParameter("state");
+        if (state != null && state.equals("success")) {
+            return "ticket";
+        }else {
+            return "index";
+        }
+    }
 
-    /**
+   /**
      * 微信支付
      */
     @RequestMapping(value = "/api/user/wx_h5/pay",method = RequestMethod.POST)

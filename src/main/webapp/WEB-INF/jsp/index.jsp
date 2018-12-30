@@ -80,11 +80,11 @@
     <p class="div-all-p"><span>费用：</span><span>￥480-580</span></p>
 </div>
 <div class="div-all" style="border-bottom: none">
-    <p class="div-p-buttom" id="enroll"><a href="ticket.jsp">立即报名</a></p>
+    <p class="div-p-buttom" id="enroll"><a href="wxapp/oauthDo">立即报名</a></p>
 </div>
 </body>
 <script type="text/javascript">
-    $(function () {
+    /*$(function () {
         $.ajax({
             url : 'wxapp/oauthDo',
             type : 'post',
@@ -93,6 +93,6 @@
             success: function (data) {
             }
         })
-    })
+    })*/
 </script>
 </html>
