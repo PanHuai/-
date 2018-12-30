@@ -83,4 +83,16 @@
     <p class="div-p-buttom" id="enroll"><a href="ticket.jsp">立即报名</a></p>
 </div>
 </body>
+<script type="text/javascript">
+    $(function () {
+        $.ajax({
+            url : 'wxapp/oauthDo',
+            type : 'post',
+            data: {},
+            dataType: 'json',
+            success: function (data) {
+            }
+        })
+    })
+</script>
 </html>

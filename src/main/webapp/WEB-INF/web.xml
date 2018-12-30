@@ -15,7 +15,11 @@
         <exception-type>java.lang.Exception</exception-type>&lt;!&ndash;设置可能会发生的java异常类型,例如:java.lang.Exception&ndash;&gt;
          <location>/ExceptionError.html</location>            &lt;!&ndash;用来设置发生错误或异常时要显示的页面&ndash;&gt;  
     </error-page>-->
-     
+
+     <!-- 监听器- -->
+    <listener>
+        <listener-class>com.lyl.listener.SessionTimeListener</listener-class>
+    </listener>
 
     <!-- 读取spring配置文件- -->
     <context-param>

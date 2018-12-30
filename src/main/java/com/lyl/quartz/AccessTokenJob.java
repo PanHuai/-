@@ -36,7 +36,6 @@ public class AccessTokenJob {
     @Autowired
     private AccessTokenService service;
 
-    @Scheduled(cron = "")
     public void task(){
         String url = "https://api.weixin.qq.com/cgi-bin/token";
         Map<String, Object> map = new HashMap<>();
@@ -58,8 +57,7 @@ public class AccessTokenJob {
             }else {
                 LocalDateTime beginTime = accessToken.getBeginTime();
                 long between = Duration.between(beginTime, LocalDateTime.now()).toMillis();
-                long mile = Duration.between(beginTime, LocalDateTime.now()).toMillis();
-                if (mile <= (Long.valueOf(check_access_token))) {
+                if (between <= (Long.valueOf(check_access_token))) {
                     String result = HttpClientUtil.doGetHttps(url, map);
                     JsonObject object = new JsonParser().parse(result).getAsJsonObject();
                     String access_token = object.get("access_token").getAsString();

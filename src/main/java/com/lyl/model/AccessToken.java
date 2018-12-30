@@ -23,7 +23,6 @@ public class AccessToken {
     }
 
     public AccessToken() {
-
     }
 
     public int getId() {

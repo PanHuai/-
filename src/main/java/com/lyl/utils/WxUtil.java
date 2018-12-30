@@ -3,6 +3,8 @@ package com.lyl.utils;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lyl.dto.UserInfoDto;
+import com.lyl.model.User;
+import com.lyl.service.UserService;
 import org.apache.commons.io.IOUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -10,21 +12,22 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
+import javax.servlet.http.HttpSession;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.*;
 
 /**
@@ -49,6 +52,9 @@ public class WxUtil {
     @Value("${mch_id}")
     private String mch_id;
 
+    @Autowired
+    private UserService userService;
+
     /**
      * 用户同意授权后 根据微信返回的code作为换取access_token的票据
      *  String access_token;  //网页授权接口调用凭证,
@@ -59,47 +65,59 @@ public class WxUtil {
      *  String errcode // 错误代码
      *  String errmsg  // 错误信息
      */
-    public JsonObject oauthCallBack(String code,String appId,String appsecret){
+    public void oauthCallBack(String code,HttpServletRequest request) throws Exception{
 
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+appId+
                 "&secret="+appsecret+"&code="+code+"&grant_type=authorization_code";
-        try {
+
             String result = HttpClientUtil.doGet(url, null);
-            logger.info("ask oauth2 result:"+result);
+            logger.warn("根据code获取授权凭证access_token  result:"+result);
             JsonObject object = new JsonParser().parse(result).getAsJsonObject();
             if (object.get("errcode") == null){
-                Map<String, Object> map = new HashMap<>();
-                map.put("access_token", object.get("access_token").getAsString());
-                map.put("openid", object.get("openid").getAsString());
-                map.put("lang", "zh_CN");
-                // 拉取用户信息
-                try {
-                    result = HttpClientUtil.doGetHttps("https://api.weixin.qq.com/sns/userinfo", map);
-                    UserInfoDto userInfoDto = (UserInfoDto) Gson.toBean(result, UserInfoDto.class);
-                    logger.info("ask wx userinfo result:"+result);
-                } catch (NoSuchAlgorithmException e) {
-                    e.printStackTrace();
-                } catch (KeyManagementException e) {
-                    e.printStackTrace();
+                String openid = object.get("access_token").getAsString();
+                User user = userService.getByOpenId(openid);
+                if (user == null){
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("openid", openid);
+                    map.put("access_token", object.get("access_token").getAsString());
+                    map.put("lang", "zh_CN");
+
+                        result = HttpClientUtil.doGetHttps("https://api.weixin.qq.com/sns/userinfo", map);
+                        logger.warn("授权获取用户基本信息 result:"+result);
+                        UserInfoDto userInfoDto = (UserInfoDto) Gson.toBean(result, UserInfoDto.class);
+                    user = new User();
+                    user.setOpenid(userInfoDto.getOpenid());
+                    user.setCity(userInfoDto.getCity());
+                    user.setSex(userInfoDto.getSex());
+                    user.setCreateTime(LocalDateTime.now());
+                    user.setLogo(userInfoDto.getHeadimgurl());
+                    user.setUnionid(userInfoDto.getUnionid());
+                    user.setUserName(userInfoDto.getNickname());
+                    user.setVersion(0);
+                    user.setUpdateTime(LocalDateTime.now());
+                    user.setTel("");
+                    userService.add(user);
+                    logger.warn("授权用户用户编号:"+user.getId());
                 }
-                return object;
+                HttpSession session = request.getSession();
+                session.setAttribute("openid",openid);
+                session.setMaxInactiveInterval(30*60);  // 单位/秒
+            }else {
+                throw new RuntimeException("根据code获取授权凭证access_token发生");
             }
-        } catch (IOException e) {
-            logger.error("ask oauth2 error:"+e);
-        }
-        return null;
     }
 
     /**
      * 预生成订单  统一下单接口
      */
-    public Map<String, Object> pay_h5(HttpServletRequest request,String notify_url,int payMoney,String no) throws Exception {
+    public Map<String, Object> pay_h5(HttpServletRequest request,String notify_url,int payMoney,String no,String openid) throws Exception {
         Map<String, Object> param = new HashMap<>();
         param.put("appid", appId);    //公众账号ID
         param.put("mch_id", mch_id);   //商户号
         param.put("nonce_str", RandomString.getInstance().generate());  //随机字符串
-        param.put("body", "淮安精英人力资源订单在线支付");      //商品描述
+        param.put("body", URLDecoder.decode("淮安精英人力资源订单在线支付","UTF-8"));      //商品描述
         param.put("out_trade_no", no);  //商户订单号
+        param.put("openid", openid);  //商户订单号
         param.put("total_fee", payMoney); //标价金额
         param.put("spbill_create_ip", IPUtil.get(request)); //终端IP
         param.put("notify_url", notify_url); //通知地址
@@ -112,21 +130,24 @@ public class WxUtil {
             sb.append(s + "=" + param.get(s) + "&");
         }
         sb.append("key=" + mch_key); // 交易密码
-        String sign = MD5Util.MD5(sb.toString(), "UTF-8").toUpperCase();
+        String sign = MD5Util.MD5Encode(sb.toString(), "UTF-8").toUpperCase();
         param.put("sign", sign);
         StringBuffer xml = new StringBuffer("");
         xml.append("<xml>");
         xml.append("<appid><![CDATA["+param.get("appid")+"]]></appid>");
         xml.append("<mch_id><![CDATA["+param.get("mch_id")+"]]></mch_id>");
-        xml.append("<nonce_str><![CDATA["+param.get("nonce_str")+"]]></nonce_str> ");
+        xml.append("<sign><![CDATA["+param.get("sign")+"]]></sign>");
+        xml.append("<openid><![CDATA["+param.get("openid")+"]]></openid>");
+        xml.append("<nonce_str><![CDATA["+param.get("nonce_str")+"]]></nonce_str>");
         xml.append("<body><![CDATA["+param.get("body")+"]]></body>");
-        xml.append("<out_trade_no><![CDATA["+param.get("out_trade_no")+"]]></out_trade_no> ");
+        xml.append("<out_trade_no><![CDATA["+param.get("out_trade_no")+"]]></out_trade_no>");
         xml.append("<total_fee><![CDATA["+param.get("total_fee")+"]]></total_fee>");
-        xml.append("<spbill_create_ip><![CDATA["+param.get("spbill_create_ip")+"]]></spbill_create_ip> ");
+        xml.append("<spbill_create_ip><![CDATA["+param.get("spbill_create_ip")+"]]></spbill_create_ip>");
         xml.append("<notify_url><![CDATA["+param.get("notify_url")+"]]></notify_url>");
-        xml.append("<trade_type><![CDATA["+param.get("trade_type")+"]]></trade_type> ");
+        xml.append("<trade_type><![CDATA["+param.get("trade_type")+"]]></trade_type>");
         xml.append("</xml>");
         URL url = new URL("https://api.mch.weixin.qq.com/pay/unifiedorder");
+        logger.info("统一下单 xml请求参数："+xml.toString());
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setRequestMethod("POST");
         conn.setConnectTimeout(30000);  // 单位 毫秒
@@ -134,10 +155,7 @@ public class WxUtil {
         conn.setDoInput(true);
         conn.setDoOutput(true);
         conn.setUseCaches(false);
-        OutputStreamWriter os = new OutputStreamWriter(conn.getOutputStream());
-        os.write(URLEncoder.encode(xml.toString(),"UTF-8"));
-        os.flush();
-        os.close();
+        IOUtils.write(xml.toString(), conn.getOutputStream(), "utf-8");
         InputStream is = conn.getInputStream();
         SAXReader reader = new SAXReader();
         Document document = reader.read(is);
@@ -224,14 +242,4 @@ public class WxUtil {
     public static abstract class CallBack{
         public abstract int callBack(String pay_no,String no);
     }
-
-    public void dd(){
-        System.out.println(appId);
-        System.out.println(wxToken);
-        System.out.println(appsecret);
-        System.out.println(mch_id);
-    }
-
-
-
 }

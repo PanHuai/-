@@ -1,5 +1,6 @@
 package com.lyl.utils;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +28,7 @@ public class HttpClientUtil {
     /**
      * 发送http GET 请求
      */
-    public static String doGet(String urlMsg, Map<String,Object> map) throws IOException {
+    public static String doGet(String urlMsg, Map<String, Object> map) throws IOException {
 
         // 封装请求参数
         StringBuffer sb = new StringBuffer("");
@@ -42,12 +43,11 @@ public class HttpClientUtil {
         URL url = null;
         if (sb != null && sb.length() > 0) {
             url = new URL(urlMsg + "?" + sb.substring(0, sb.length() - 1));
-            logger.info("send Http GET ask URL:"+urlMsg + "?" + sb.substring(0, sb.length() - 1));
+            logger.info("send Http GET ask URL:" + urlMsg + "?" + sb.substring(0, sb.length() - 1));
         } else {
             url = new URL(urlMsg);
-            logger.info("send Http GET ask URL:"+urlMsg);
+            logger.info("send Http GET ask URL:" + urlMsg);
         }
-        logger.info("send Http GET ask URL:"+urlMsg);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");  // application/x-www-form-urlencoded  application/json
         connection.setRequestProperty("Accept-Charset", "UTF-8");
@@ -63,22 +63,22 @@ public class HttpClientUtil {
         InputStream is = connection.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         String line = null;
-        while ((line = br.readLine()) != null){
+        while ((line = br.readLine()) != null) {
             sb.append(line);
         }
         br.close();
         is.close();
         connection.disconnect();
-        logger.info("response doGet msg:"+sb.toString());
+        logger.info("response doGet msg:" + sb.toString());
         return sb.toString();
     }
 
     /**
      * http  POST 请求
      */
-    public static String doPost(String urlMsg, Map<String,Object> map) throws IOException{
+    public static String doPost(String urlMsg, Map<String, Object> map) throws IOException {
         StringBuffer sb = new StringBuffer("");
-        logger.info("send Http POST ask URL:"+urlMsg);
+        logger.info("send Http POST ask URL:" + urlMsg);
         if (map != null && map.size() > 0) {
             for (Map.Entry<String, Object> entry : map.entrySet()) {
                 sb.append(entry.getKey());
@@ -86,7 +86,7 @@ public class HttpClientUtil {
                 sb.append(URLEncoder.encode(String.valueOf(entry.getValue()), "UTF-8"));
                 sb.append("&");
             }
-            logger.info("send Http POST ask request:"+sb.substring(0,sb.length()-1));
+            logger.info("send Http POST ask request:" + sb.substring(0, sb.length() - 1));
         }
         URL url = new URL(urlMsg);
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -98,9 +98,9 @@ public class HttpClientUtil {
         conn.setUseCaches(false);
 
         OutputStreamWriter os = null;
-        if (sb != null && sb.length()>0){
-            os = new OutputStreamWriter(conn.getOutputStream(),"UTF-8");
-            os.write(sb.substring(0,sb.length()-1));
+        if (sb != null && sb.length() > 0) {
+            os = new OutputStreamWriter(conn.getOutputStream(), "UTF-8");
+            os.write(sb.substring(0, sb.length() - 1));
             os.flush();
             os.close();
         }
@@ -109,27 +109,27 @@ public class HttpClientUtil {
         BufferedReader br = new BufferedReader(sr);
         String line = null;
         sb.setLength(0);
-        while ((line = br.readLine()) != null){
+        while ((line = br.readLine()) != null) {
             sb.append(line);
         }
         br.close();
         sr.close();
         is.close();
         conn.disconnect();
-        logger.info("response doPost msg:"+sb.toString());
+        logger.info("response doPost msg:" + sb.toString());
         return sb.toString();
     }
 
     /**
      * https 请求
      */
-    public static String doGetHttps(String requestUrl,Map<String,Object> map)
+    public static String doGetHttps(String requestUrl, Map<String, Object> map)
             throws NoSuchAlgorithmException, KeyManagementException, IOException {
         // 创建SSLContext对象，并使用我们指定的信任管理器初始化
         SSLContext sslContext = SSLContext.getInstance("SSL");
         TrustManager[] tm = {new MyX509TrustManager()};
         // 初始化
-        sslContext.init(null,tm,new SecureRandom());
+        sslContext.init(null, tm, new SecureRandom());
         // 获取SSLSocketFactory对象
         SSLSocketFactory ssf = sslContext.getSocketFactory();
 
@@ -141,14 +141,15 @@ public class HttpClientUtil {
                 sb.append(String.valueOf(entry.getValue()));
                 sb.append("&");
             }
-            logger.info("send Https ask request:"+sb.substring(0,sb.length()-1));
         }
         URL url = null;
-            if (sb !=null && sb.length()>0){
-                url = new URL(requestUrl + "?" + sb.substring(0, sb.length() - 1));
-            }else {
-                url = new URL(requestUrl);
-            }
+        if (sb != null && sb.length() > 0) {
+            url = new URL(requestUrl + "?" + sb.substring(0, sb.length() - 1));
+            logger.info("发送https GET请求 request:"+ requestUrl+"?"+ sb.substring(0, sb.length() - 1));
+        } else {
+            url = new URL(requestUrl);
+            logger.info("发送https GET请求 request:"+ requestUrl);
+        }
 
         HttpsURLConnection conn = (HttpsURLConnection) url.openConnection();
         conn.setSSLSocketFactory(ssf);
@@ -162,23 +163,23 @@ public class HttpClientUtil {
         BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         sb.setLength(0);
         String line = null;
-        while ((line=br.readLine()) != null){
+        while ((line = br.readLine()) != null) {
             sb.append(line);
         }
         br.close();
         is.close();
         conn.disconnect();
-        logger.info("response doHttps msg:"+sb.toString());
+        logger.info("response doGet Https msg:" + sb.toString());
         return sb.toString();
     }
 
-    public static String doPostHttps(String requestUrl,String data)
+    public static String doPostHttps(String requestUrl, String data)
             throws NoSuchAlgorithmException, KeyManagementException, IOException {
         // 创建SSLContext对象，并使用我们指定的信任管理器初始化
         SSLContext sslContext = SSLContext.getInstance("SSL");
         TrustManager[] tm = {new MyX509TrustManager()};
         // 初始化
-        sslContext.init(null,tm,new SecureRandom());
+        sslContext.init(null, tm, new SecureRandom());
         // 获取SSLSocketFactory对象
         SSLSocketFactory ssf = sslContext.getSocketFactory();
         URL url = new URL(requestUrl);
@@ -188,27 +189,22 @@ public class HttpClientUtil {
         conn.setDoInput(true);
         conn.setUseCaches(false);
         conn.setRequestMethod("POST");
-        if (data != null){
-            OutputStream outputStream = conn.getOutputStream();
-            OutputStreamWriter os = new OutputStreamWriter(outputStream);
-            os.write(URLEncoder.encode(data,"UTF-8"));
-            os.flush();
-            outputStream.flush();
-            os.close();
-            outputStream.close();
+        if (data != null) {
+            IOUtils.write(data,conn.getOutputStream(),"utf-8");
         }
+        logger.info("发送https GET请求 request:"+ requestUrl+"?"+ data);
         // 从输入流读取返回内容
         InputStream is = conn.getInputStream();
         BufferedReader br = new BufferedReader(new InputStreamReader(is, "UTF-8"));
         StringBuffer sb = new StringBuffer("");
         String line = null;
-        while ((line=br.readLine()) != null){
+        while ((line = br.readLine()) != null) {
             sb.append(line);
         }
         br.close();
         is.close();
         conn.disconnect();
-        logger.info("response doHttps msg:"+sb.toString());
+        logger.info("response do POST Https msg:" + sb.toString());
         return sb.toString();
     }
 

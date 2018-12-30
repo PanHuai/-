@@ -186,7 +186,7 @@
             "userId":"1"
         }
         $.ajax({
-            url: 'api/user/order/adds',
+            url: 'api/user/order/add',
             type: 'post',
             data: JSON.stringify(params),
             dataType: 'json',
@@ -194,7 +194,7 @@
                 "Content-Type": "application/json"
             },
             success: function (data) {
-                /*payMoney(data.data);*/
+                payMoney(data.data);
             }
         });
     }

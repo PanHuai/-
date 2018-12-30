@@ -2,6 +2,7 @@ package com.lyl.controller;
 
 import com.google.gson.JsonObject;
 import com.lyl.model.Order;
+import com.lyl.model.User;
 import com.lyl.service.OrderService;
 import com.lyl.utils.SHA1;
 import com.lyl.utils.StringUtils;
@@ -36,12 +37,12 @@ public class WxController {
     @Value("${appId}")
     private String appId;
 
-    @Value("${appsecret}")
-    private String appsecret;
     @Value("${localhost_url}")
     private String localhost_url;
+
     @Autowired
     private OrderService orderService;
+
     @Autowired
     private WxUtil wxUtil;
 
@@ -66,8 +67,6 @@ public class WxController {
         }
     }
 
-
-
     /**
      * 获取网页授权
      */
@@ -79,24 +78,26 @@ public class WxController {
                     "&response_type=code" +
                     "&scope=snsapi_userinfo" +
                     "&state=myInfo#wechat_redirect";
-
-           // String result = IOUtils.toString(url, "utf-8");
-        return "redirect:"+url;//必须重定向，否则不能成功
+        //必须重定向
+        return "redirect:"+url;
     }
 
     /**
      * 通过code换取网页授权access_token
      */
     @RequestMapping(value = "/wxapp/oauth_callback",method = RequestMethod.POST)
-    public void oauthCallback(HttpServletRequest request){
+    public String oauthCallback(HttpServletRequest request){
         String code = request.getParameter("code");
         String state = request.getParameter("state");
         if (StringUtils.isNotBlank(code)){
-            JsonObject object = wxUtil.oauthCallBack(code,appId,appsecret);
-
-
+            try {
+                wxUtil.oauthCallBack(code,request);
+            } catch (Exception e) {
+                logger.error("wxapp/oauth_callback error"+e);
+                return "redirect:/wxapp/oauthDo";
+            }
         }
-
+        return "/index";
     }
 
 
@@ -113,7 +114,8 @@ public class WxController {
         }
         Map<String, Object> map = new HashMap<>();
         try {
-            map = wxUtil.pay_h5(request, localhost_url+"/wxapp/h5/notif_callback", 1,order.getNo());
+            User user = order.getUser();
+            map = wxUtil.pay_h5(request, localhost_url+"/wxapp/h5/notif_callback", 1,order.getNo(),user.getOpenid());
             map.put("state", "success");
             logger.info(map.toString());
         } catch (Exception e) {

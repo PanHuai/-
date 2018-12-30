@@ -87,4 +87,6 @@
     <!-- enables scanning for @Transactional annotations -->
     <tx:annotation-driven transaction-manager="transactionManager"/>
 
+    <import resource="classpath*:spring/quartz.xml" />
+
 </beans>

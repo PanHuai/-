@@ -17,15 +17,62 @@
 
     <!-- 线程执行器配置，用于任务注册 -->
     <bean id="executor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
-        <property name="corePoolSize" value="10" />
-        <property name="maxPoolSize" value="100" />
+        <property name="corePoolSize" value="2" />
+        <property name="maxPoolSize" value="10" />
         <property name="queueCapacity" value="500" />
     </bean>
-    <bean id="accessToken" class="com.lyl.quartz.AccessTokenJob">
-        <property name="startDelay" value="500" />  <!-- 启动延迟  单位/毫秒-->
-        <property name="repeatCount" value="0" />   <!--  重复次数  -->
-        <property name="repeatInterval" value="0" /><!-- 多久执行一次 单位/毫秒-->
+
+    <!-- 作业调度器 -->
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="overwriteExistingJobs" value="true"/>
+        <property name="autoStartup" value="true"/>
+        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+        <property name="triggers">
+            <list>
+                <ref bean="accessToken_job"/>
+                <ref bean="menuCreate_job"/>
+            </list>
+        </property>
     </bean>
 
+    <!-- <editor-fold desc="accesstoken 定时获取"> -->
+    <bean id="accessToken" class="com.lyl.quartz.AccessTokenJob" />
+    <bean id="accessToken_Detail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="accessToken"/>
+        <property name="targetMethod" value="task" />
+        <property name="concurrent" value="false" /><!--将并发设置为false -->
+    </bean>
+    <!-- 触发点 -->
+   <!-- <bean id="accessToken_job" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="accessToken_Detail" />
+        <property name="cronExpression" value="0 0/30 * * * ?" />
+    </bean>-->
+    <bean id="accessToken_job" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="accessToken_Detail" />
+        <property name="repeatInterval" value="5800000" />  <!-- 十分钟一次-->
+        <property name="startDelay" value="2000" />  <!-- 调度工厂实例化后，经过2秒开始执行调度 -->
+        <property name="repeatCount" value="0" />     <!--重复次数：0  去掉的话按结束时间算-->
+    </bean>
+    <!--</editor-fold>-->
 
+    <!-- <editor-fold desc="创建菜单"> -->
+    <bean id="menuCreate" class="com.lyl.quartz.MenuCreate" />
+    <bean id="menuCreate_Detail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="menuCreate"/>
+        <property name="targetMethod" value="task" />
+        <property name="concurrent" value="false" /><!--将并发设置为false -->
+    </bean>
+    <bean id="menuCreate_job" class="org.springframework.scheduling.quartz.SimpleTriggerFactoryBean">
+        <property name="jobDetail" ref="menuCreate_Detail" />
+        <property name="repeatInterval" value="600000" />  <!-- 十分钟一次-->
+        <property name="startDelay" value="15000" />  <!-- 调度工厂实例化后，经过15秒开始执行调度 -->
+        <property name="repeatCount" value="0" />     <!--重复次数：0  去掉的话按结束时间算-->
+    </bean>
+    <!--</editor-fold>-->
+
+    <!-- <editor-fold desc="注释"> -->
+    <!-- <property name="startDelay" value="500" />  &lt;!&ndash; 启动延迟  单位/毫秒&ndash;&gt;
+        <property name="repeatCount" value="0" />   &lt;!&ndash; 重复次数  &ndash;&gt;
+        <property name="repeatInterval" value="0" />&lt;!&ndash; 多久执行一次 单位/毫秒&ndash;&gt;-->
+    <!--</editor-fold>-->
 </beans>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.lyl.mapper.AccessTokenMapper">
+
+    <select id="get" resultMap="xx">
+        SELECT id,access_token,expires_in,beginTime FROM o_access_token
+    </select>
+
+    <insert id="add" parameterType="AccessToken">
+        INSERT INTO o_access_token (access_token,expires_in,beginTime) VALUES (#{access_token},#{expires_in},#{beginTime});
+    </insert>
+
+    <update id="updata" parameterType="AccessToken">
+        UPDATE o_access_token SET access_token = #{access_token},expires_in = #{expires_in},beginTime = #{beginTime} WHERE id = #{id};
+    </update>
+
+    <resultMap id="xx" type="AccessToken">
+        <id column="id" property="id"></id>
+        <result column="access_token" property="access_token"></result>
+        <result column="expires_in" property="expires_in"></result>
+        <result column="beginTime" property="beginTime"></result>
+    </resultMap>
+</mapper>
