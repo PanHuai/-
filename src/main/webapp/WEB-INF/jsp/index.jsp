@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8" %>
-<%--<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>--%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <meta name="viewport"
@@ -36,7 +36,8 @@
         .div-all-p span:nth-child(1) {
             display: inline-block;
             float: left;
-            width: 15%;
+            width: 6%;
+            margin-left: 3%;
         }
 
         .div-all-p span:nth-child(2) {
@@ -68,31 +69,19 @@
     <img class="img-header" src="images/timg.jpg">
 </div>
 <div class="div-all">
-    <p style="font-weight: bold;text-align: center">《社保由税务征收对企业影响与应对》</p>
+    <p style="font-weight: bold;text-align: center">《${active.title}》</p>
 </div>
 <div class="div-all">
-    <p class="div-all-p"><span>时间：</span><span>2018-12-23 08:30 ~ 2018-12-23 12:30</span></p>
+    <p class="div-all-p"><span><img class="img-header" src="images/times.png"></span><span>${active.beginTime} ~ ${active.endTime}</span></p>
 </div>
 <div class="div-all">
-    <p class="div-all-p"><span>地点：</span><span>江苏淮安市区软件园城的南路22好五一山东省</span></p>
+    <p class="div-all-p"><span><img class="img-header" src="images/address.png"></span><span class="ssss">${active.address}</span></p>
 </div>
 <div class="div-all">
-    <p class="div-all-p"><span>费用：</span><span>￥480-580</span></p>
+    <p class="div-all-p"><span><img class="img-header" src="images/money.png"></span><span>￥${start}-${end}</span></p>
 </div>
 <div class="div-all" style="border-bottom: none">
-    <p class="div-p-buttom" id="enroll"><a href="wxapp/oauthDo">立即报名</a></p>
+    <p class="div-p-buttom" id="enroll"><a href="wxapp/oauthDo?id=${active.id}">立即报名</a></p>
 </div>
 </body>
-<script type="text/javascript">
-    /*$(function () {
-        $.ajax({
-            url : 'wxapp/oauthDo',
-            type : 'post',
-            data: {},
-            dataType: 'json',
-            success: function (data) {
-            }
-        })
-    })*/
-</script>
 </html>

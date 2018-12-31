@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.lyl.mapper.OrderMapper">
-    <select id="getById" resultType="Order">
-        SELECT * FROM o_order WHERE id = #{id};
+    <select id="getById" resultMap="xx">
+        SELECT o.id, o.no,u.id user_id,u.openid FROM o_order o left join o_user u on u.id = o.user_id WHERE o.id = #{id};
     </select>
+
+    <resultMap id="xx" type="Order">
+        <id column="id" property="id"></id>
+        <result column="no" property="no"></result>
+        <association property="user" column="user_id" javaType="User">
+            <id property="id" column="user_id"></id>
+            <id property="openid" column="openid"></id>
+        </association>
+    </resultMap>
 
     <select id="getByNo" resultType="Order">
         SELECT * FROM o_order WHERE no = #{no};

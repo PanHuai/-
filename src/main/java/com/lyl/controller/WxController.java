@@ -71,13 +71,14 @@ public class WxController {
      * 获取网页授权
      */
     @RequestMapping(value = "/wxapp/oauthDo",method = RequestMethod.GET)
-    public String oauthDo() throws UnsupportedEncodingException {
+    public String oauthDo(HttpServletRequest request) throws UnsupportedEncodingException {
+        String state = request.getParameter("id");
         String callback = URLEncoder.encode(localhost_url+"/wxapp/oauth_callback", "UTF-8");
         String url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=" +appId+
                     "&redirect_uri="+callback+
                     "&response_type=code" +
                     "&scope=snsapi_userinfo" +
-                    "&state=myInfo#wechat_redirect";
+                    "&state="+state+"#wechat_redirect";
         //必须重定向
         return "redirect:"+url;
     }
@@ -97,17 +98,7 @@ public class WxController {
                 return "redirect:/wxapp/oauthDo";
             }
         }
-        return "redirect:/ticket?state=success";
-    }
-
-    @RequestMapping("/ticket")
-    public String ticket(HttpServletRequest request){
-        String state = request.getParameter("state");
-        if (state != null && state.equals("success")) {
-            return "ticket";
-        }else {
-            return "index";
-        }
+        return "redirect:/ticket?state="+state;
     }
 
    /**

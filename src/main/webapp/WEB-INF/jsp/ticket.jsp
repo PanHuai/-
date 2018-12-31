@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8"
          pageEncoding="utf-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <html>
 <head>
     <meta name="viewport"
@@ -138,6 +140,25 @@
     <script src="js/jquery-3.2.1.min.js"></script>
 </head>
 <body style="background-color: whitesmoke;margin: 3.5% 3.5% 0">
+<c:forEach items="${products}" var="p">
+    <div class="div-top">
+        <div class="div-middle">
+            <div>
+                <span class="left-span-one">${p.name}</span>
+                <span class="left-span-two">￥${p.orig}</span>
+            </div>
+            <div>
+                <span class="right-span-one"><img class="img-header" src="images/addico.png"></span>
+                <span class="right-span-two">${p.currentNum}</span>
+                <span class="right-span-one"><img class="img-header" src="images/subico.png"></span>
+            </div>
+        </div>
+        <hr class="hr_style">
+        <div class="div-middle">
+            <p class="div-middle-p"><span class="span-one"><c:if test="${p.type == 0}">注：</c:if><c:if test="${p.type == 1}">团：</c:if></span><span class="span-two">${p.ps}</span></p>
+        </div>
+    </div>
+</c:forEach>
 <div class="div-top">
     <div class="div-middle">
         <div>
