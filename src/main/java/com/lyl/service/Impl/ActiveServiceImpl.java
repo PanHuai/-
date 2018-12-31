@@ -21,6 +21,11 @@ public class ActiveServiceImpl implements ActiveService {
     }
 
     @Override
+    public Active getById(int id) {
+        return activeMapper.getById(id);
+    }
+
+    @Override
     @Transactional
     public int add(Active active) {
         return activeMapper.add(active);

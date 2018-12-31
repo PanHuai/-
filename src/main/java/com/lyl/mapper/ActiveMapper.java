@@ -1,6 +1,7 @@
 package com.lyl.mapper;
 
 import com.lyl.model.Active;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 /**
@@ -10,6 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface ActiveMapper {
 
     public Active get();
+
+    public Active getById(@Param("id") int id);
 
     public int add(Active active);
 

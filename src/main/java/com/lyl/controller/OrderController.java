@@ -50,8 +50,7 @@ public class OrderController {
         /*int userId = Integer.valueOf(map.get("userId"));
         BigDecimal orig = new BigDecimal(map.get("orig"));
         BigDecimal payMoney = new BigDecimal(map.get("payMoney"));*/
-        String openid = (String) request.getSession().getAttribute("openid");
-        User user = userService.getByOpenId(openid);
+        User user = (User) request.getSession().getAttribute("user");
         Order order = new Order();
         order.setState(OrderEnum.zero.getCode());
         order.setCreateTime(LocalDateTime.now());

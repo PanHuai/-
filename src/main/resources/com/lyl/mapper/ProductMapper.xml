@@ -2,8 +2,31 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <!--<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" "http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd" >-->
 <mapper namespace="com.lyl.mapper.ProductMapper">
-    <select id="get" resultType="Product">
-        select * from o_product where active_id = #{active_id} order by orig
+    <select id="getOrigByActive" resultType="Product">
+        select orig from o_product where active_id = #{active_id} order by orig
     </select>
 
+    <select id="getProductsByActive" resultMap="ticket">
+        select p.id,p.name,p.orig,p.type,p.currentNum,p.ps,a.id active_id from o_product p left join o_active a on a.id=p.active_id where p.active_id = #{active_id} order by p.type;
+    </select>
+
+    <resultMap id="ticket" type="Product">
+        <id property="id" column="id"></id>
+        <result property="name" column="name"></result>
+        <result property="orig" column="orig"></result>
+        <result property="type" column="type"></result>
+        <result property="currentNum" column="currentNum"></result>
+        <result property="ps" column="ps"></result>
+        <association property="active" column="active_id" javaType="Active">
+            <id property="id" column="active_id"></id>
+        </association>
+    </resultMap>
+
+    <select id="getByProductId" resultType="Product">
+        select * from o_product where id = #{id}
+    </select>
+
+    <select id="getByTypeAndActive" resultType="Product">
+        select * from o_product where active_id = #{active_id} and type = #{type};
+    </select>
 </mapper>

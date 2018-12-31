@@ -37,13 +37,13 @@
             display: inline-block;
             float: left;
             width: 6%;
-            margin-left: 3%;
+            margin-left: 3.5%;
         }
 
         .div-all-p span:nth-child(2) {
             display: inline-block;
             float: right;
-            width: 85%;
+            width: 86%;
         }
 
         .div-p-buttom {
@@ -66,19 +66,19 @@
 </head>
 <body>
 <div>
-    <img class="img-header" src="images/timg.jpg">
+    <img class="img-header" src="/images/timg.jpg">
 </div>
 <div class="div-all">
     <p style="font-weight: bold;text-align: center">《${active.title}》</p>
 </div>
 <div class="div-all">
-    <p class="div-all-p"><span><img class="img-header" src="images/times.png"></span><span>${active.beginTime} ~ ${active.endTime}</span></p>
+    <p class="div-all-p"><span><img class="img-header" src="/images/times.png"></span><span>${format.format(active.beginTime)} ~ ${format.format(active.endTime)}</span></p>
 </div>
 <div class="div-all">
-    <p class="div-all-p"><span><img class="img-header" src="images/address.png"></span><span class="ssss">${active.address}</span></p>
+    <p class="div-all-p"><span><img class="img-header" src="/images/address.png"></span><span class="ssss">${active.address}</span></p>
 </div>
 <div class="div-all">
-    <p class="div-all-p"><span><img class="img-header" src="images/money.png"></span><span>￥${start}-${end}</span></p>
+    <p class="div-all-p"><span><img class="img-header" src="/images/money.png"></span><span>￥${start}-${end}</span></p>
 </div>
 <div class="div-all" style="border-bottom: none">
     <p class="div-p-buttom" id="enroll"><a href="wxapp/oauthDo?id=${active.id}">立即报名</a></p>

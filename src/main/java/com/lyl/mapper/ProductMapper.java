@@ -12,5 +12,11 @@ import java.util.List;
 @Repository
 public interface ProductMapper {
 
-    public List<Product> get(@Param("active_id") int id);
+    public List<Product> getOrigByActive(@Param("active_id") int id);
+
+    public List<Product> getProductsByActive(@Param("active_id") int id);
+
+    public Product getByProductId(@Param("id") int id);
+
+    public Product getByTypeAndActive(@Param("active_id") int id,@Param("type") int type);
 }

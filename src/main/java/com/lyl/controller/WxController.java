@@ -98,7 +98,7 @@ public class WxController {
                 return "redirect:/wxapp/oauthDo";
             }
         }
-        return "redirect:/ticket?state="+state;
+        return "redirect:/api/ticket?state="+state;
     }
 
    /**

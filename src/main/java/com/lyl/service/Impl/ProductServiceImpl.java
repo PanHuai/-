@@ -17,7 +17,22 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private ProductMapper productMapper;
     @Override
-    public List<Product> get(int id) {
-        return productMapper.get(id);
+    public List<Product> getOrigByActive(int id) {
+        return productMapper.getOrigByActive(id);
+    }
+
+    @Override
+    public List<Product> getProductsByActive(int id) {
+        return productMapper.getProductsByActive(id);
+    }
+
+    @Override
+    public Product getByProductId(int id) {
+        return productMapper.getByProductId(id);
+    }
+
+    @Override
+    public Product getByTypeAndActive(int active_id, int type) {
+        return productMapper.getByTypeAndActive(active_id,type);
     }
 }

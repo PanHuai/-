@@ -100,7 +100,7 @@ public class WxUtil {
                     logger.warn("授权用户用户编号:"+user.getId());
                 }
                 HttpSession session = request.getSession();
-                session.setAttribute("openid",openid);
+                session.setAttribute("user",user);
                 session.setMaxInactiveInterval(30*60);  // 单位/秒
             }else {
                 throw new RuntimeException("根据code获取授权凭证access_token发生");

@@ -9,6 +9,8 @@ public interface ActiveService {
 
     public Active get();
 
+    public Active getById(int id);
+
     public int add(Active active);
 
     public int update(Active active);

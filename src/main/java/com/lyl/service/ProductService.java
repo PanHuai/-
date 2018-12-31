@@ -9,5 +9,11 @@ import java.util.List;
  */
 public interface ProductService {
 
-    public List<Product> get(int id);
+    public List<Product> getOrigByActive(int id);
+
+    public List<Product> getProductsByActive(int id);
+
+    public Product getByProductId(int id);
+
+    public Product getByTypeAndActive(int active_id, int type);
 }

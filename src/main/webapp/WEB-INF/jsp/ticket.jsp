@@ -136,30 +136,39 @@
             color: white;
             border-radius: 6% 0 0;
         }
+        .select_icon{
+            width: 8%;
+            position: absolute;
+        }
     </style>
-    <script src="js/jquery-3.2.1.min.js"></script>
+    <script src="/js/jquery-3.2.1.min.js"></script>
 </head>
 <body style="background-color: whitesmoke;margin: 3.5% 3.5% 0">
-<c:forEach items="${products}" var="p">
-    <div class="div-top">
+<c:forEach items="${products}" var="p" varStatus="s">
+    <div class="div-top" onclick="selectDo(${carts.get(s.index).id})">
+        <c:if test="${carts.get(s.index).checked == 1}">
+            <span class="select_icon"><img class="img-header" src="/images/selected.png"></span>
+        </c:if>
         <div class="div-middle">
             <div>
                 <span class="left-span-one">${p.name}</span>
-                <span class="left-span-two">￥${p.orig}</span>
+                <span class="left-span-two">￥<fmt:formatNumber value="${p.orig}" type="number" maxFractionDigits="0" /></span>
             </div>
             <div>
-                <span class="right-span-one"><img class="img-header" src="images/addico.png"></span>
-                <span class="right-span-two">${p.currentNum}</span>
-                <span class="right-span-one"><img class="img-header" src="images/subico.png"></span>
+                <span class="right-span-one" onclick="miues(${p.id},1,${s.index})"><img class="img-header" src="/images/addico.png"></span>
+                <span class="right-span-two">${carts.get(s.index).count}</span>
+                <span class="right-span-one" onclick="miues(${p.id},0,${s.index})"><img class="img-header" src="/images/subico.png"></span>
             </div>
         </div>
-        <hr class="hr_style">
+        <hr class="hr_style" <c:if test="${carts.get(s.index).checked == 1}">style="background-color: #f9bd06" </c:if>>
         <div class="div-middle">
             <p class="div-middle-p"><span class="span-one"><c:if test="${p.type == 0}">注：</c:if><c:if test="${p.type == 1}">团：</c:if></span><span class="span-two">${p.ps}</span></p>
         </div>
     </div>
 </c:forEach>
-<div class="div-top">
+
+<%--<editor-fold desc="注释">
+&lt;%&ndash;<div class="div-top">
     <div class="div-middle">
         <div>
             <span class="left-span-one">普通票</span>
@@ -193,10 +202,11 @@
         <p class="div-middle-p"><span class="span-one">团：</span><span class="span-two">此门票为团购票，3人（含）以上480/人（含税开票）</span>
         </p>
     </div>
-</div>
+</div>&ndash;%&gt;
+</editor-fold>--%>
 
 <div class="div-buttom">
-    <p>合计：<span>￥5620</span></p>
+    <p>合计：<span>￥${money}</span></p>
     <p onclick="submitDo()">确定</p>
 </div>
 </body>
@@ -262,6 +272,41 @@
         } else {
             onBridgeReady(id);
         }
+    }
+
+    function miues(id,type,index) {
+        var ele = document.getElementsByClassName("right-span-two");
+        var msg = ele[index].innerHTML
+        if (msg == 0 && type == 0){
+            return;
+        }
+        $.ajax({
+            url : '/api/miues',
+            type: 'post',
+            data : {
+                productId : id,
+                type : type,
+                active_id : ${active_id}
+            },
+            dataType: 'json',
+            success : function (data) {
+                window.location.reload();
+            }
+        })
+    }
+    function selectDo(cartId) {
+        $.ajax({
+            url : '/api/cart/select',
+            type: 'post',
+            data : {
+                cartId : cartId,
+                active_id : ${active_id}
+            },
+            dataType: 'json',
+            success : function (data) {
+                window.location.reload();
+            }
+        })
     }
 
 
