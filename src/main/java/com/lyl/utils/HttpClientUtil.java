@@ -50,6 +50,7 @@ public class HttpClientUtil {
         }
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");  // application/x-www-form-urlencoded  application/json
+        // conn.addRequestProperty("Content-Type","application/x-www-form-urlencoded; charset=UTF-8");
         connection.setRequestProperty("Accept-Charset", "UTF-8");
         connection.setRequestProperty("Connection", "keep-Alive");
         connection.setConnectTimeout(30000); // 设置连接主机超时（单位：毫秒)
