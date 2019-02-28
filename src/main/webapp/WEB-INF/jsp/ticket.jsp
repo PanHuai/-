@@ -292,7 +292,8 @@
             success : function (data) {
                 window.location.reload();
             }
-        })
+        });
+        event.stopPropagation();
     }
     function selectDo(cartId) {
         $.ajax({
