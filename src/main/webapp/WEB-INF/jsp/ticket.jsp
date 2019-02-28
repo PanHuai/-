@@ -217,7 +217,7 @@
             "userId":"1"
         }
         $.ajax({
-            url: 'api/user/order/add',
+            url: '/api/user/order/add',
             type: 'post',
             data: JSON.stringify(params),
             dataType: 'json',
@@ -232,7 +232,7 @@
 
     function onBridgeReady(id) {
         $.ajax({
-            url: 'api/user/wx_h5/pay',
+            url: '/api/user/wx_h5/pay',
             type: 'post',
             data: {
                 "orderId": id
